@@ -21,11 +21,10 @@ limitations under the License.
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.olap4j</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>olap4j-xmla</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>olap4j-xmla</name>
   <description>olap4j driver for XML/A</description>
@@ -39,22 +38,9 @@ limitations under the License.
   <dependencies>
     <dependency>
       <groupId>org.olap4j</groupId>
-      <artifactId>olap4j</artifactId>
+      <artifactId>olap4j-api</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>rt-jdk1.5</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.java.openjdk</groupId>
-      <artifactId>rt-java6</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -62,8 +48,8 @@ limitations under the License.
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -93,79 +79,6 @@ limitations under the License.
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compile-jdk15</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <excludes>
-                <exclude>org/olap4j/driver/xmla/FactoryJdbc4Impl.java</exclude>
-                <exclude>org/olap4j/driver/xmla/FactoryJdbc4Plus.java</exclude>
-                <exclude>org/olap4j/driver/xmla/FactoryJdbc41Impl.java</exclude>
-              </excludes>
-              <includes>
-                <include>org/olap4j/driver/xmla/FactoryJdbc3Impl.java</include>
-              </includes>
-              <compilerArguments>
-                <verbose />
-                <bootclasspath>${com.sun:rt-jdk1.5:jar}</bootclasspath>
-              </compilerArguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>compile-jdk16</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <excludes>
-                <exclude>org/olap4j/driver/xmla/FactoryJdbc3Impl.java</exclude>
-              </excludes>
-              <includes>
-                <include>org/olap4j/driver/xmla/FactoryJdbc4Impl.java</include>
-                <include>org/olap4j/driver/xmla/FactoryJdbc4Plus.java</include>
-                <include>org/olap4j/driver/xmla/FactoryJdbc41Impl.java</include>
-              </includes>
-              <compilerArguments>
-                <verbose />
-                <bootclasspath>${net.java.openjdk:rt-java6:jar}</bootclasspath>
-              </compilerArguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>compile-jdk17</id>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>org/olap4j/driver/xmla/FactoryJdbc4Impl.java</include>
-                <include>org/olap4j/driver/xmla/FactoryJdbc4Plus.java</include>
-                <include>org/olap4j/driver/xmla/FactoryJdbc41Impl.java</include>
-              </includes>
-              <compilerArguments>
-                <verbose />
-                <bootclasspath>${net.java.openjdk:rt-java7:jar}</bootclasspath>
-              </compilerArguments>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <excludes>
-            <exclude>org/olap4j/driver/xmla/FactoryJdbc4Impl.java</exclude>
-            <exclude>org/olap4j/driver/xmla/FactoryJdbc4Plus.java</exclude>
-            <exclude>org/olap4j/driver/xmla/FactoryJdbc41Impl.java</exclude>
-            <exclude>org/olap4j/driver/xmla/FactoryJdbc3Impl.java</exclude>
-          </excludes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -225,11 +138,6 @@ limitations under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${maven-javadoc-plugin.version}</version>
-        <configuration>
-          <links>
-            <link>http://docs.oracle.com/javase/7/docs/api/</link>
-          </links>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>

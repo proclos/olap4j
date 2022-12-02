@@ -52,7 +52,7 @@ public class DefaultMdxParserImpl implements MdxParser {
         try {
             return new MdxParserImpl(mdx, debug, funTable, false)
                 .selectStatement();
-        } catch (TokenMgrError e) {
+        } catch (TokenMgrException e) {
             throw convertException(mdx, e);
         } catch (ParseException e) {
             throw convertException(mdx, e);
@@ -62,7 +62,7 @@ public class DefaultMdxParserImpl implements MdxParser {
     public ParseTreeNode parseExpression(String mdx) {
         try {
             return new MdxParserImpl(mdx, debug, funTable, false).expression();
-        } catch (TokenMgrError e) {
+        } catch (TokenMgrException e) {
             throw convertException(mdx, e);
         } catch (ParseException e) {
             throw convertException(mdx, e);
@@ -84,7 +84,7 @@ public class DefaultMdxParserImpl implements MdxParser {
     {
         ParseRegion parseRegion = null;
         String message = null;
-        if (pe instanceof TokenMgrError) {
+        if (pe instanceof TokenMgrException) {
             Pattern pattern =
                 Pattern.compile(
                     "Lexical error at line ([0-9]+), column ([0-9]+)\\. .*");

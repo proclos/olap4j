@@ -25,7 +25,9 @@ import org.olap4j.mdx.*;
 
 import junit.framework.*;
 
-import org.apache.commons.dbcp.*;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.DelegatingConnection;
+import org.apache.commons.dbcp2.DelegatingStatement;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -62,22 +64,6 @@ public class TestContext implements TestEnv {
             }
         };
 
-    /**
-     * The following classes are part of the TCK. Each driver should call them.
-     */
-    public static final Class<?>[] TCK_CLASSES = {
-        org.olap4j.ConnectionTest.class,
-        org.olap4j.CellSetFormatterTest.class,
-        org.olap4j.MetadataTest.class,
-        org.olap4j.mdx.MdxTest.class,
-        org.olap4j.transform.TransformTest.class,
-        org.olap4j.OlapTreeTest.class,
-        org.olap4j.OlapTest.class,
-        org.olap4j.test.ParserTest.class,
-        org.olap4j.XmlaConnectionTest.class,
-        // TODO: enable
-        // org.olap4j.driver.xmla.XmlaOlap4jCellSetTest.class,
-    };
 
     private final Tester tester;
     private final Properties properties;
@@ -102,9 +88,15 @@ public class TestContext implements TestEnv {
      * @param suite Suite to which to add tests
      */
     private static void addTck(TestSuite suite) {
-        for (Class<?> tckClass : TCK_CLASSES) {
-            suite.addTestSuite(tckClass);
-        }
+    	suite.addTestSuite(org.olap4j.ConnectionTest.class);
+    	suite.addTestSuite(org.olap4j.CellSetFormatterTest.class);
+    	suite.addTestSuite(org.olap4j.MetadataTest.class);
+    	suite.addTestSuite(org.olap4j.mdx.MdxTest.class);
+    	suite.addTestSuite(org.olap4j.transform.TransformTest.class);
+    	suite.addTestSuite(org.olap4j.OlapTreeTest.class);
+    	suite.addTestSuite(org.olap4j.OlapTest.class);
+    	suite.addTestSuite(org.olap4j.test.ParserTest.class);
+    	suite.addTestSuite(org.olap4j.XmlaConnectionTest.class);
     }
 
     /**

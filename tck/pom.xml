@@ -21,11 +21,10 @@ limitations under the License.
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.olap4j</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>olap4j-tck</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>olap4j TCK (Test Compatibility Kit)</description>
 
@@ -38,21 +37,22 @@ limitations under the License.
   <dependencies>
     <dependency>
       <groupId>org.olap4j</groupId>
-      <artifactId>olap4j</artifactId>
+      <artifactId>olap4j-xmla</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.olap4j</groupId>
-      <artifactId>olap4j-xmla</artifactId>
+      <artifactId>olap4j-api</artifactId>
       <scope>compile</scope>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hsqldb</groupId>

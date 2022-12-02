@@ -17,15 +17,15 @@
 */
 package org.olap4j;
 
-import org.olap4j.layout.RectangularCellSetFormatter;
-import org.olap4j.layout.TraditionalCellSetFormatter;
-import org.olap4j.test.TckTestCase;
-import org.olap4j.test.TestContext;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.olap4j.layout.RectangularCellSetFormatter;
+import org.olap4j.layout.TraditionalCellSetFormatter;
+import org.olap4j.test.TckTestCase;
+import org.olap4j.test.TestContext;
 
 /**
  * Unit test for converting MDX CellSets to text.

@@ -17,20 +17,38 @@
 */
 package org.olap4j.driver.xmla;
 
-import org.olap4j.metadata.Hierarchy;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.olap4j.metadata.XmlaConstant;
-
-import org.apache.xerces.impl.Constants;
-import org.apache.xerces.parsers.DOMParser;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-
-import org.w3c.dom.*;
-import org.xml.sax.*;
-
-import java.io.*;
-import java.math.*;
-import java.util.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Utility methods for the olap4j driver for XML/A.
@@ -70,9 +88,23 @@ abstract class XmlaOlap4jUtil {
         "http://apache.org/xml/features/validation/schema-full-checking";
     static final String DEFER_NODE_EXPANSION =
         "http://apache.org/xml/features/dom/defer-node-expansion";
-    static final String SCHEMA_LOCATION =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_LOCATION;
-
+  
+    
+    static DocumentBuilderFactory factory = null;
+    
+    static DocumentBuilderFactory getDOMFactory() throws ParserConfigurationException {
+    	if (factory == null) {
+    		factory = DocumentBuilderFactory.newInstance();
+    		factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        	factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        	factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+            factory.setNamespaceAware(true);
+    	}
+    	return factory;
+    }
+    
     /**
      * Parse a stream into a Document (no validation).
      *
@@ -81,74 +113,34 @@ abstract class XmlaOlap4jUtil {
         throws SAXException, IOException
     {
         InputSource source = new InputSource(new ByteArrayInputStream(in));
-
-        DOMParser parser = getParser(null, null, false);
         try {
-            parser.parse(source);
-            checkForParseError(parser);
-        } catch (SAXParseException ex) {
-            checkForParseError(parser, ex);
+	        DocumentBuilder builder = getDOMFactory().newDocumentBuilder();
+	        builder.setErrorHandler(new ErrorHandler() {
+	
+	        	@Override
+	    		public void warning(SAXParseException exception) throws SAXException {
+	    			//nothing to do 
+	    		}
+	
+	    		@Override
+	    		public void error(SAXParseException exception) throws SAXException {
+	    			throw new SAXException(exception);
+	    		}
+	
+	    		@Override
+	    		public void fatalError(SAXParseException exception) throws SAXException {
+	    			error(exception);
+	    		}
+	        	
+	        });
+	        return builder.parse(source);
         }
-
-        return parser.getDocument();
-    }
-
-    /**
-     * Get your non-cached DOM parser which can be configured to do schema
-     * based validation of the instance Document.
-     *
-     */
-    static DOMParser getParser(
-        String schemaLocationPropertyValue,
-        EntityResolver entityResolver,
-        boolean validate)
-        throws SAXNotRecognizedException, SAXNotSupportedException
-    {
-        boolean doingValidation =
-            (validate || (schemaLocationPropertyValue != null));
-
-        DOMParser parser = new DOMParser();
-
-        parser.setEntityResolver(entityResolver);
-        parser.setErrorHandler(new ErrorHandlerImpl());
-        parser.setFeature(DEFER_NODE_EXPANSION, false);
-        parser.setFeature(NAMESPACES_FEATURE_ID, true);
-        parser.setFeature(SCHEMA_VALIDATION_FEATURE_ID, doingValidation);
-        parser.setFeature(VALIDATION_FEATURE_ID, doingValidation);
-
-        if (schemaLocationPropertyValue != null) {
-            parser.setProperty(
-                SCHEMA_LOCATION,
-                schemaLocationPropertyValue.replace('\\', '/'));
-        }
-
-        return parser;
-    }
-
-    /**
-     * Checks whether the DOMParser after parsing a Document has any errors and,
-     * if so, throws a RuntimeException exception containing the errors.
-     */
-    static void checkForParseError(DOMParser parser, Throwable t) {
-        final ErrorHandler errorHandler = parser.getErrorHandler();
-
-        if (errorHandler instanceof ErrorHandlerImpl) {
-            final ErrorHandlerImpl saxEH = (ErrorHandlerImpl) errorHandler;
-            final List<ErrorInfo> errors = saxEH.getErrors();
-
-            if (errors != null && errors.size() > 0) {
-                String errorStr = ErrorHandlerImpl.formatErrorInfos(saxEH);
-                throw new RuntimeException(errorStr, t);
-            }
-        } else {
-            System.out.println("errorHandler=" + errorHandler);
+        catch (ParserConfigurationException e) {
+        	throw new SAXException(e);
         }
     }
 
-    static void checkForParseError(final DOMParser parser) {
-        checkForParseError(parser, null);
-    }
-
+    
     static List<Node> listOf(final NodeList nodeList) {
         return new AbstractList<Node>() {
             public Node get(int index) {
@@ -428,29 +420,20 @@ abstract class XmlaOlap4jUtil {
             return null;
         }
         try {
-            Document doc = node.getOwnerDocument();
-            OutputFormat format;
-            if (doc != null) {
-                format = new OutputFormat(doc, null, prettyPrint);
-            } else {
-                format = new OutputFormat("xml", null, prettyPrint);
-            }
-            if (prettyPrint) {
-                format.setLineSeparator(LINE_SEP);
-            } else {
-                format.setLineSeparator("");
-            }
-            StringWriter writer = new StringWriter(1000);
-            XMLSerializer serial = new XMLSerializer(writer, format);
-            serial.asDOMSerializer();
+            StringWriter writer = new StringWriter();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, prettyPrint ? "yes" : "no");
+            DOMSource source = new DOMSource(node);
+            StreamResult result = new StreamResult(writer);
+            transformer.transform(new DOMSource(node), new StreamResult(writer));          
             if (node instanceof Document) {
-                serial.serialize((Document) node);
+                transformer.transform(source, result);
             } else if (node instanceof Element) {
-                format.setOmitXMLDeclaration(true);
-                serial.serialize((Element) node);
+            	transformer.setOutputProperty(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
+            	transformer.transform(source, result);
             } else if (node instanceof DocumentFragment) {
-                format.setOmitXMLDeclaration(true);
-                serial.serialize((DocumentFragment) node);
+            	transformer.setOutputProperty(javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes");
+            	transformer.transform(source, result);
             } else if (node instanceof Text) {
                 Text text = (Text) node;
                 return text.getData();

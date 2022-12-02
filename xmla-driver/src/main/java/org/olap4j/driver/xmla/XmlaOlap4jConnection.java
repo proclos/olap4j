@@ -17,32 +17,87 @@
 */
 package org.olap4j.driver.xmla;
 
-import org.olap4j.*;
-import org.olap4j.driver.xmla.proxy.*;
-import org.olap4j.impl.*;
-import org.olap4j.mdx.ParseTreeWriter;
-import org.olap4j.mdx.SelectNode;
-import org.olap4j.mdx.parser.*;
-import org.olap4j.mdx.parser.impl.DefaultMdxParserImpl;
-import org.olap4j.metadata.*;
-import org.olap4j.metadata.Database.AuthenticationMode;
-import org.olap4j.metadata.Database.ProviderType;
-import org.olap4j.xmla.XmlaMeasureGroup;
-
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.ROWSET_NS;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.SOAP_NS;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.XMLA_NS;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.booleanElement;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.childElements;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.enumElement;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.enumSetElement;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.findChild;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.integerElement;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.parse;
+import static org.olap4j.driver.xmla.XmlaOlap4jUtil.stringElement;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.*;
-import java.util.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.*;
+import org.olap4j.OlapConnection;
+import org.olap4j.OlapDatabaseMetaData;
+import org.olap4j.OlapException;
+import org.olap4j.OlapStatement;
+import org.olap4j.PreparedOlapStatement;
+import org.olap4j.Scenario;
+import org.olap4j.driver.xmla.proxy.XmlaOlap4jCachedProxy;
+import org.olap4j.driver.xmla.proxy.XmlaOlap4jProxy;
+import org.olap4j.driver.xmla.proxy.XmlaOlap4jProxyException;
+import org.olap4j.impl.ConnectStringParser;
+import org.olap4j.impl.LcidLocale;
+import org.olap4j.impl.Named;
+import org.olap4j.impl.Olap4jUtil;
+import org.olap4j.impl.UnmodifiableArrayList;
+import org.olap4j.mdx.ParseTreeWriter;
+import org.olap4j.mdx.SelectNode;
+import org.olap4j.mdx.parser.MdxParser;
+import org.olap4j.mdx.parser.MdxParserFactory;
+import org.olap4j.mdx.parser.MdxValidator;
+import org.olap4j.mdx.parser.impl.DefaultMdxParserImpl;
+import org.olap4j.metadata.Catalog;
+import org.olap4j.metadata.Database;
+import org.olap4j.metadata.Database.AuthenticationMode;
+import org.olap4j.metadata.Database.ProviderType;
+import org.olap4j.metadata.Datatype;
+import org.olap4j.metadata.Dimension;
+import org.olap4j.metadata.Hierarchy;
+import org.olap4j.metadata.Level;
+import org.olap4j.metadata.Measure;
+import org.olap4j.metadata.Member;
+import org.olap4j.metadata.NamedList;
+import org.olap4j.metadata.Property;
+import org.olap4j.metadata.Schema;
+import org.olap4j.metadata.XmlaConstants;
+import org.olap4j.xmla.XmlaMeasureGroup;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Implementation of {@link org.olap4j.OlapConnection}
@@ -1174,10 +1229,13 @@ abstract class XmlaOlap4jConnection implements OlapConnection {
         if (metadataRequest.allowsLocale()) {
             final Locale locale1 = context.olap4jConnection.getLocale();
             if (locale1 != null) {
-                final short lcid = LcidLocale.localeToLcid(locale1);
-                buf.append("<LocaleIdentifier>")
-                    .append(lcid)
-                    .append("</LocaleIdentifier>");
+            	try {
+	                final short lcid = LcidLocale.localeToLcid(locale1);
+	                buf.append("<LocaleIdentifier>")
+	                    .append(lcid)
+	                    .append("</LocaleIdentifier>");
+	            	}
+            	catch (Exception e) {}
             }
         }
 

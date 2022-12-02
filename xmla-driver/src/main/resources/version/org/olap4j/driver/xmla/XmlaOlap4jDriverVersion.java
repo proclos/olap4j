@@ -24,7 +24,7 @@ class XmlaOlap4jDriverVersion {
     static final String VERSION = "@pomversion@";
     static final String BUILD_TIMESTAMP = "@buildtime@";
     static final int MAJOR_VERSION = 2;
-    static final int MINOR_VERSION = 0;
+    static final int MINOR_VERSION = 1;
 }
 
 // End XmlaOlap4jDriverVersion.java
