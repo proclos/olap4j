@@ -17,14 +17,27 @@
 */
 package org.olap4j.driver.xmla;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.WeakHashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.logging.Logger;
+
 import org.olap4j.driver.xmla.proxy.XmlaOlap4jHttpProxy;
 import org.olap4j.driver.xmla.proxy.XmlaOlap4jProxy;
 import org.olap4j.impl.Olap4jUtil;
-
-import java.sql.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.Logger;
 
 /**
  * Olap4j driver for generic XML for Analysis (XMLA) providers.
@@ -260,7 +273,7 @@ public class XmlaOlap4jDriver implements Driver {
      * @return Driver name
      */
     String getName() {
-        return XmlaOlap4jDriverVersion.NAME;
+        return "olap4j driver for XML/A";
     }
 
     /**
@@ -269,15 +282,15 @@ public class XmlaOlap4jDriver implements Driver {
      * @return Driver version
      */
     public String getVersion() {
-        return XmlaOlap4jDriverVersion.VERSION;
+        return "2.1";
     }
 
     public int getMajorVersion() {
-        return XmlaOlap4jDriverVersion.MAJOR_VERSION;
+        return 2;
     }
 
     public int getMinorVersion() {
-        return XmlaOlap4jDriverVersion.MINOR_VERSION;
+        return 1;
     }
 
     public boolean jdbcCompliant() {

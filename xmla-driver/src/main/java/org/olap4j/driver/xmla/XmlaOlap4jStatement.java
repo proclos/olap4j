@@ -17,20 +17,6 @@
 */
 package org.olap4j.driver.xmla;
 
-import org.olap4j.CellSet;
-import org.olap4j.CellSetListener;
-import org.olap4j.OlapConnection;
-import org.olap4j.OlapException;
-import org.olap4j.OlapStatement;
-import org.olap4j.driver.xmla.XmlaOlap4jConnection.BackendFlavor;
-import org.olap4j.mdx.ParseTreeNode;
-import org.olap4j.mdx.ParseTreeWriter;
-import org.olap4j.mdx.SelectNode;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.ResultSet;
@@ -45,16 +31,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.ROWSET_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.SOAP_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.SQL_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.XMLA_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.XSD_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.childElements;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.findChild;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.findChildren;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.parse;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.prettyPrint;
+import org.olap4j.CellSet;
+import org.olap4j.CellSetListener;
+import org.olap4j.OlapConnection;
+import org.olap4j.OlapException;
+import org.olap4j.OlapStatement;
+import org.olap4j.driver.xmla.XmlaOlap4jConnection.BackendFlavor;
+import org.olap4j.mdx.ParseTreeNode;
+import org.olap4j.mdx.ParseTreeWriter;
+import org.olap4j.mdx.SelectNode;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Implementation of {@link org.olap4j.OlapStatement}
@@ -63,7 +51,7 @@ import static org.olap4j.driver.xmla.XmlaOlap4jUtil.prettyPrint;
  * @author jhyde
  * @since May 24, 2007
  */
-abstract class XmlaOlap4jStatement implements OlapStatement {
+abstract class XmlaOlap4jStatement extends XmlaOlap4jUtil implements OlapStatement {
     final XmlaOlap4jConnection olap4jConnection;
     private boolean closed;
 

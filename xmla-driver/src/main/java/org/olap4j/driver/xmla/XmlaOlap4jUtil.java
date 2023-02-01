@@ -105,16 +105,24 @@ abstract class XmlaOlap4jUtil {
     	return factory;
     }
     
+    private ThreadLocal<DocumentBuilder> documentBuilder = ThreadLocal.withInitial(() -> {
+	    try {
+	    	return getDOMFactory().newDocumentBuilder();
+	    } catch (Exception e) {
+	    	throw new RuntimeException(e);
+	    }
+    });
+    
     /**
      * Parse a stream into a Document (no validation).
      *
      */
-    static Document parse(byte[] in)
+    public Document parse(byte[] in)
         throws SAXException, IOException
     {
-        InputSource source = new InputSource(new ByteArrayInputStream(in));
-        try {
-	        DocumentBuilder builder = getDOMFactory().newDocumentBuilder();
+    	try {
+	        InputSource source = new InputSource(new ByteArrayInputStream(in));
+	        DocumentBuilder builder = documentBuilder.get();
 	        builder.setErrorHandler(new ErrorHandler() {
 	
 	        	@Override
@@ -134,10 +142,9 @@ abstract class XmlaOlap4jUtil {
 	        	
 	        });
 	        return builder.parse(source);
-        }
-        catch (ParserConfigurationException e) {
-        	throw new SAXException(e);
-        }
+    	} catch (Exception e) {
+    		throw new IOException(e);
+    	}
     }
 
     

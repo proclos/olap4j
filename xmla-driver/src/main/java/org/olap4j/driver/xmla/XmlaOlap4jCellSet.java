@@ -17,23 +17,52 @@
 */
 package org.olap4j.driver.xmla;
 
-import org.olap4j.*;
-import org.olap4j.impl.Olap4jUtil;
-import org.olap4j.mdx.*;
-import org.olap4j.metadata.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.Ref;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.olap4j.Axis;
+import org.olap4j.Cell;
+import org.olap4j.CellSet;
+import org.olap4j.CellSetAxis;
+import org.olap4j.CellSetAxisMetaData;
+import org.olap4j.CellSetMetaData;
+import org.olap4j.OlapException;
+import org.olap4j.OlapStatement;
+import org.olap4j.Position;
+import org.olap4j.impl.Olap4jUtil;
+import org.olap4j.mdx.IdentifierNode;
+import org.olap4j.mdx.IdentifierSegment;
+import org.olap4j.mdx.ParseTreeNode;
+import org.olap4j.metadata.Cube;
+import org.olap4j.metadata.Dimension;
+import org.olap4j.metadata.Hierarchy;
+import org.olap4j.metadata.Level;
+import org.olap4j.metadata.Member;
+import org.olap4j.metadata.NamedList;
+import org.olap4j.metadata.Property;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import java.io.*;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.*;
-import java.sql.Date;
-import java.util.*;
-
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.*;
 
 /**
  * Implementation of {@link org.olap4j.CellSet}
@@ -45,7 +74,7 @@ import static org.olap4j.driver.xmla.XmlaOlap4jUtil.*;
  * @author jhyde
  * @since May 24, 2007
  */
-abstract class XmlaOlap4jCellSet implements CellSet {
+abstract class XmlaOlap4jCellSet extends XmlaOlap4jUtil implements CellSet {
     private static final String VALUE_TAG = "Value";
     enum XsdTypes {
         XSD_INT("xsd:int"),

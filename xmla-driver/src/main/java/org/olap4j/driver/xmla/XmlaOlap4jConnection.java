@@ -17,18 +17,6 @@
 */
 package org.olap4j.driver.xmla;
 
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.ROWSET_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.SOAP_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.XMLA_NS;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.booleanElement;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.childElements;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.enumElement;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.enumSetElement;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.findChild;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.integerElement;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.parse;
-import static org.olap4j.driver.xmla.XmlaOlap4jUtil.stringElement;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -109,7 +97,7 @@ import org.xml.sax.SAXException;
  * @author jhyde
  * @since May 23, 2007
  */
-abstract class XmlaOlap4jConnection implements OlapConnection {
+abstract class XmlaOlap4jConnection extends XmlaOlap4jUtil implements OlapConnection {
     /**
      * Handler for errors.
      */
