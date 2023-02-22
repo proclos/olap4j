@@ -1,6 +1,8 @@
 # Olap4j changes
 
-###############################################################################
+## Olap4j 2.0.1
+
+Dependency updates, bug fixes and performance enhancements (merged [olap4j2](https://github.com/olap4j/olap4j/tree/olap4j2) branch from original repository).
 
 ## Olap4j 1.2.0
 
@@ -18,8 +20,6 @@ previous releases.
     - Fixed issue where an xsd:decimal element was materialized as
       java.lang.Integer.
     - Added support for xsd:byte, xsd:biginteger and xsd:bigdecimal
-
-###############################################################################
 
 ## Olap4j 1.1.0
 
@@ -48,8 +48,6 @@ page at github.com/olap4j
     - Fixes compatibility issues with SAP BW.
     - Fixes a thread safety issue in DeferredNamedList.
 
-###############################################################################
-
 ## Olap4j 1.0.1
 
 This release is a maintenance release and maintains backwards compatibility
@@ -75,8 +73,6 @@ Among other notable changes, this version introduces support for JDBC 4.1.
       of the XMLA's PropertyList payload.
     - The XmlaDriver now exposes a public constructor to prevent
       errors in Sun's JDBC implementation.
-
-###############################################################################
 
 ## Olap4j 1.0.0
 
@@ -118,8 +114,6 @@ Olap4j is now split into five Java libraries.
 
 * olap4j-sources.jar
     Java source files.
-
-===============================================================================
 
 ## Changes to olap4j since olap4j-0.9.3.
 
